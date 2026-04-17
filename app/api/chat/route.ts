@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   const userId = session.user.id
 
   // Search for relevant document chunks
-  const chunks = await prisma.documentChunk.findMany({
+  const chunks = await prisma.chunk.findMany({
     where: {
       document: {
         source: { userId },
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   // Build context from chunks
   const context = chunks
-    .map((c) => `[${c.document.title} - ${c.document.source.type}]\n${c.content}`)
+    .map((c) => `[${c.document.title} - ${c.document.source.type}]\n${c.text}`)
     .join('\n\n')
 
   const systemPrompt = context
@@ -61,9 +61,9 @@ export async function POST(req: NextRequest) {
     documentId: c.document.id,
     title: c.document.title,
     sourceType: c.document.source.type,
-    sourcedAt: c.document.source.lastSyncedAt?.toISOString() || null,
+    sourcedAt: c.document.sourcedAt?.toISOString() || null,
     url: c.document.url,
-    snippet: c.content.slice(0, 200),
+    snippet: c.text.slice(0, 200),
   }))
 
   return NextResponse.json({ answer, citations })
