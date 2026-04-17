@@ -38,23 +38,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Source already connected' }, { status: 409 })
   }
 
-  // Get access token from the user's account
-  const account = await prisma.account.findFirst({
-    where: { userId: session.user.id, provider: 'google' },
-  })
-
-  if (!account?.access_token) {
-    return NextResponse.json({ error: 'Google account not connected' }, { status: 400 })
-  }
-
   const source = await prisma.source.create({
     data: {
       userId: session.user.id,
       type: type as SourceType,
-      status: 'PENDING',
-      accessToken: account.access_token,
-      refreshToken: account.refresh_token,
-      tokenExpiry: account.expires_at ? new Date(account.expires_at * 1000) : null,
+      status: 'CONNECTED',
     },
   })
 
