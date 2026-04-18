@@ -28,9 +28,11 @@ export interface Document {
   title: string
   snippet: string
   author?: string
+  origin?: string
   updatedAt: string
   sourceUrl?: string
   content?: string
+  chunkCount: number
 }
 
 export interface Source {
